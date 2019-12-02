@@ -57,8 +57,8 @@ public class Const {
      */
     //密钥：
     public static String myJwtSecret = "gzccNice";
-    //过期时长：1天：
-    public static int expertTimme = 30 * 60 * 60 * 24 * 1000;
+    //过期时长：30天：
+    public static int expertTimme =  60 * 60 * 24 * 1000;
 //    public static int expertTimme = 10* 1000;
 
 }

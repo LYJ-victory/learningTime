@@ -1,19 +1,14 @@
 package com.gzcc.filter;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.gzcc.common.Const;
+import com.gzcc.exception.MyAuthenticationException;
 import com.gzcc.pojo.Student;
-import com.gzcc.pojo.Temp;
-import com.gzcc.pojo.TempUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -52,20 +47,8 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         final String password = (String) dataFromRequest.get("password");
 
         try {
-//
-//            BufferedReader streamReader = new BufferedReader( new InputStreamReader(req.getInputStream(), "UTF-8"));
-//            StringBuilder responseStrBuilder = new StringBuilder();
-//            String inputStr;
-//            while ((inputStr = streamReader.readLine()) != null)
-//                responseStrBuilder.append(inputStr);
-//            JSONObject jsonObject = JSONObject.parseObject(responseStrBuilder.toString());
-//            param= jsonObject.toJSONString();
-//            System.out.println("参数是："+param);
-//
-//            final TempUser tempuser = objectMapper.readValue(param, TempUser.class);
-//            System.out.println(tempuser);
             Student user = new Student();
-            user.setUid(username);
+            user.setUid(username);//这里username是学号
             user.setPassword(password);
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -76,8 +59,7 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
             );
         } catch (Exception e) {
             //请先注册
-            throw new RuntimeException(e);
-//            res.getWriter().write(String.valueOf(new ResponseEntity<String>("请先注册", HttpStatus.BAD_REQUEST)));
+            throw new MyAuthenticationException("身份校验错误");
         }
     }
 
@@ -88,11 +70,13 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
 
+
         String token = Jwts.builder()
                 .setSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())//这里的getUsername得到的是学号
                 .setExpiration(new Date(System.currentTimeMillis() + Const.expertTimme))//过期时间
                 .signWith(SignatureAlgorithm.HS512, Const.myJwtSecret)
                 .compact();
+        System.out.println(auth);
         res.getWriter().write(token);//返回在结果中
 //        res.addHeader("Authorization", "Bearer " + token);返回在头部
     }

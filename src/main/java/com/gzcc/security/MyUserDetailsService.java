@@ -31,7 +31,8 @@ public class MyUserDetailsService implements UserDetailsService {
         Optional<Student> id = studentRepository.findById(s);
 
         if (id.get().getName() != null){
-            return new User(id.get().getName(),id.get().getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("user"));
+
+            return new User(id.get().getUid(),id.get().getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("user"));
         }
         return new User(null,null,null);
     }

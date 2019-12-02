@@ -46,10 +46,6 @@ public class LoginController {
     @Autowired
     private RedisService redisService;
 
-    @GetMapping("/CreateSimpleExcelToDisk")
-    public void test(){
-        System.out.println("测试成功,这里是controller");
-    }
 //    @Value("${jwt.header}")
 //    private String tokenHeader;
     /**
@@ -140,28 +136,7 @@ public class LoginController {
     /**
      * 登录：
      */
-
-//    @PostMapping("/login")
-//    public ResponseEntity<String> login(@RequestParam("username") @Valid String userId,
-//                                         @RequestParam("password") @Valid String password,
-//                                         HttpServletResponse response){
-//        System.out.println("这里是登录");
-//        Student student = studentService.login(response, userId, password);
-//        return new ResponseEntity<String>(student.toString(),HttpStatus.OK);
-//    }
-//    @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
-//    public ResponseEntity<?> createAuthenticationToken(
-//            @RequestParam("username") @Valid String userId,
-//            @RequestParam("password") @Valid String password,
-//            HttpServletResponse response
-//    ) throws AuthenticationException {
-//        //  @RequestBody JwtAuthenticationRequest authenticationRequest
-//        final String token = studentService.login(response,userId,password);
-//
-//        // Return the token
-////        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
-//        return ResponseEntity.ok(token);
-//    }
+    //略。
     /**
      * 自定义邮箱校验：
      * @param email

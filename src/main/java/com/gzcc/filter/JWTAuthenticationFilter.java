@@ -1,6 +1,7 @@
 package com.gzcc.filter;
 
 import com.gzcc.common.Const;
+import com.gzcc.exception.MyAuthenticationException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,28 +33,43 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
             return;
         }
         //得到用户的身份信息：
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
+        try {
+            UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
+        }catch (Exception e){
+            throw new MyAuthenticationException("身份校验错误");
+        }
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        authentication.getDetails();
+//        System.out.println(authentication.getDetails());
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
 
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        if (token != null) {
-            // parse the token.
-            String user = Jwts.parser()
-                    .setSigningKey(Const.myJwtSecret)
-                    .parseClaimsJws(token.replace("Bearer ", ""))
-                    .getBody()
-                    .getSubject();
 
-            if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+        try {
+            if (token != null) {
+                // parse the token.
+                String user = Jwts.parser()
+                        .setSigningKey(Const.myJwtSecret)
+                        .parseClaimsJws(token.replace("Bearer ", ""))
+                        .getBody()
+                        .getSubject();
+                System.out.println(user);
+                System.out.println();
+
+                if (user != null) {
+
+                    return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                }
+                return null;
             }
-            return null;
+        }catch (Exception e){
+            throw new MyAuthenticationException("身份校验错误");
         }
+
         return null;
     }
 

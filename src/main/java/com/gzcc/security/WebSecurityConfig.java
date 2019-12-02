@@ -1,8 +1,11 @@
 package com.gzcc.security;
 
 import com.gzcc.common.Const;
+import com.gzcc.exception.handler.MyAccessDeniedHandler;
+import com.gzcc.exception.handler.MyAuthenticationEntryPoint;
 import com.gzcc.filter.JWTAuthenticationFilter;
 import com.gzcc.filter.JWTLoginFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,6 +27,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+
+    @Autowired
+    private MyAccessDeniedHandler myAccessDeniedHandler;
 
     private UserDetailsService userDetailsService;
 
@@ -65,6 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 //禁用缓存：
                 .headers().cacheControl();
+        //自定义异常处理：
+        http.exceptionHandling().authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler);
     }
 
     @Override

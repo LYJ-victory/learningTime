@@ -2,6 +2,7 @@ package com.gzcc.controller.student;
 
 import com.gzcc.pojo.Student;
 import com.gzcc.pojo.response.CreditVo;
+import com.gzcc.security.MyUserDetailsService;
 import com.gzcc.service.StudentService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -26,19 +27,22 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
+
     /**
      * 查询学时：
      */
     @ApiOperation(value = "查询个人学时",notes = "需要登录")
-    @ApiImplicitParam(name = "uid",value = "学号",paramType = "path",dataType = "String")
-    @PostMapping("/student/{id}")
-    public ResponseEntity<CreditVo> findCreditByUid(@PathVariable("id") String uid){
-        log.info("id是这个："+uid);
-        if (StringUtils.isEmpty(studentService.findCreditByUid(uid))){
+    @PostMapping("/credit")
+    public ResponseEntity<CreditVo> findCreditByUid(){
+        //拿到用户的个人信息：
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (StringUtils.isEmpty(studentService.findCreditByUid(authentication.getName()))){
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else {
             CreditVo creditVo = new CreditVo();
-            BeanUtils.copyProperties(studentService.findCreditByUid(uid),creditVo);
+            BeanUtils.copyProperties(studentService.findCreditByUid(authentication.getName()),creditVo);
             return ResponseEntity.ok(creditVo);
         }
     }
