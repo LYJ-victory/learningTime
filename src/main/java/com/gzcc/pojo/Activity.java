@@ -28,7 +28,9 @@ public class Activity {
     private LocalDateTime deadline;
 
     //1:参赛者、2：观众、3：工作人员：
-    private Short whoAmI;
+    private int join_type;
+    //学时：
+    private Double score;
 
 ////    工作人员学时：
 //    private Double scoreStaff;
@@ -37,10 +39,9 @@ public class Activity {
 ////    观众学时：
 //    private Double scoreViewer;
 
-
 //    活动是否结束：
     private Short stop;
-//    报名人数：
+//    报名人数：该活动允许参加的最大人数
     private Integer nums;
 //    活动地点：
     @Column(columnDefinition = "varchar(200)")

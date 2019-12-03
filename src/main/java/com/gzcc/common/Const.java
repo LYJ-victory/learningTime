@@ -43,6 +43,8 @@ public class Const {
      */
     //设置邮箱验证码过期时间为5分钟:
     public static final int CODE_EXPIRE_SECONDS = 300;
+    //设置活动报名过期时间为30天：
+    public static final long ACTIVITY_EXPIRE_SECONDS = 30*24*60*60;
 
     /**
      * 活动列表页相关：

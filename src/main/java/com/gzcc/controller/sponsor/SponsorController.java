@@ -1,9 +1,12 @@
 package com.gzcc.controller.sponsor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gzcc.common.Const;
 import com.gzcc.pojo.Activity;
+import com.gzcc.pojo.TempActivity;
 import com.gzcc.pojo.response.ActivityListVO;
 import com.gzcc.service.ActivityService;
+import com.gzcc.service.StudentActivitiesService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,6 +31,12 @@ public class SponsorController {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private StudentActivitiesService studentActivitiesService;
 
 
     /**
@@ -81,11 +91,14 @@ public class SponsorController {
     @ApiOperation(value = "活动报名",notes = "点击立即报名，返回可供学生选择的身份")
     @ApiImplicitParam(name = "uid",value = "要报名的活动id号")
     @PostMapping("activities/signActivity")
-    public ResponseEntity<String> signActivity(@RequestBody String uid){
-        if(StringUtils.isEmpty(uid)){
+    public ResponseEntity<String> signActivity(@RequestBody String uid) throws IOException {
+
+        final TempActivity newUid = objectMapper.readValue(uid, TempActivity.class);
+
+        if(StringUtils.isEmpty(newUid)){
             return ResponseEntity.badRequest().body("无效活动号");
         }
-        String enrolmentStatus  = activityService.findActivityByUid(uid);
+        String enrolmentStatus  = activityService.findActivityByUid(newUid.getUid());
 
         return new ResponseEntity<String>(enrolmentStatus,HttpStatus.OK);
 
@@ -101,8 +114,8 @@ public class SponsorController {
 //    @PostMapping("activities/confirmEnroll")
 //    public ResponseEntity<String> confirmSignActivity(@RequestBody String uid){
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//
+//        final String studentId = (String) authentication.getPrincipal();
+//        studentActivitiesService.InsertStudentId();
 //
 //    }
 
