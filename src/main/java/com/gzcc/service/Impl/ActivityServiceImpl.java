@@ -27,6 +27,9 @@ public class ActivityServiceImpl implements ActivityService{
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private RedisService redisService;
+
 
     /**
      * 分页展示活动列表：
@@ -92,21 +95,34 @@ public class ActivityServiceImpl implements ActivityService{
     @Override
     public String findActivityByUid(String uid) {
         //查找该活动并返回：该活动需要招募的身份是参赛者还是观众
+        String tempType ="";
+        //缓存中没有：
+       try{
+           if(redisService.get(uid) == null){
+               final Optional<Activity> activityByUid = activityRepository.findById(uid);
+//            if(activityByUid.get() != null){
+               final int join_type = activityByUid.get().getJoin_type();
+               switch (join_type){
+                   case 1:
+                       tempType = "参赛者";
+                       break;
+                   case 2:
+                       tempType =  "观众";
+                       break;
+                   default:
+                       break;
+               }
+//            }
+               redisService.set(uid,tempType);
+               redisService.expire(uid,Const.ACTIVITY_EXPIRE_SECONDS);//设置过期时间是在活动报名结束之前
+           }
+       }catch (Exception e){
+           return "";
+       }
+        //缓存中有：
+        String activity_join_type = redisService.get(uid);
+        return activity_join_type;
 
-        final Activity activityByUid = activityRepository.findByUid(uid);
-        if(activityByUid != null){
-            final Short whoAmI = activityByUid.getWhoAmI();
-            switch (whoAmI){
-                case 1:
-                    return "参赛者";
-                case 2:
-                    return "观众";
-                case 3:
-                    return "工作人员";
-            }
-        }
-
-        return null;
     }
     /**
      * 加入了缓存的活动列表：
