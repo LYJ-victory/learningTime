@@ -26,12 +26,18 @@ public class Activity {
     private String time;
 //    截止报名时间：
     private LocalDateTime deadline;
-//    工作人员学时：
-    private Double scoreStaff;
-//    参与者学时：
-    private Double scorePlayer;
-//    观众学时：
-    private Double scoreViewer;
+
+    //1:参赛者、2：观众、3：工作人员：
+    private Short whoAmI;
+
+////    工作人员学时：
+//    private Double scoreStaff;
+////    参与者学时：
+//    private Double scorePlayer;
+////    观众学时：
+//    private Double scoreViewer;
+
+
 //    活动是否结束：
     private Short stop;
 //    报名人数：

@@ -21,9 +21,6 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
     private StudentRepository studentRepository;
-//
-//    @Autowired
-//    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
@@ -34,6 +31,6 @@ public class MyUserDetailsService implements UserDetailsService {
 
             return new User(id.get().getUid(),id.get().getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("user"));
         }
-        return new User(null,null,null);
+        return null;
     }
 }

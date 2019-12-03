@@ -54,7 +54,6 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
                     new UsernamePasswordAuthenticationToken(
                             user.getUid(),
                             user.getPassword(),
-//                            new ArrayList<>())
                             new ArrayList<>())
             );
         } catch (Exception e) {
@@ -73,10 +72,9 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String token = Jwts.builder()
                 .setSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())//这里的getUsername得到的是学号
-                .setExpiration(new Date(System.currentTimeMillis() + Const.expertTimme))//过期时间
+                .setExpiration(new Date(System.currentTimeMillis() + Const.expertTime))//过期时间
                 .signWith(SignatureAlgorithm.HS512, Const.myJwtSecret)
                 .compact();
-        System.out.println(auth);
         res.getWriter().write(token);//返回在结果中
 //        res.addHeader("Authorization", "Bearer " + token);返回在头部
     }

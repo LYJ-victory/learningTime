@@ -33,12 +33,9 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
             return;
         }
         //得到用户的身份信息：
-        try {
             UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
-        }catch (Exception e){
-            throw new MyAuthenticationException("身份校验错误");
-        }
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
 //        authentication.getDetails();
 //        System.out.println(authentication.getDetails());
 
@@ -49,7 +46,7 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
 
-        try {
+//        try {
             if (token != null) {
                 // parse the token.
                 String user = Jwts.parser()
@@ -57,8 +54,6 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
                         .parseClaimsJws(token.replace("Bearer ", ""))
                         .getBody()
                         .getSubject();
-                System.out.println(user);
-                System.out.println();
 
                 if (user != null) {
 
@@ -66,9 +61,9 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
                 }
                 return null;
             }
-        }catch (Exception e){
-            throw new MyAuthenticationException("身份校验错误");
-        }
+//        }catch (Exception e){
+//            throw new MyAuthenticationException("身份校验错误");
+//        }
 
         return null;
     }

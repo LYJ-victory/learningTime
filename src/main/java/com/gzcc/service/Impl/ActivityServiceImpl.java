@@ -89,6 +89,25 @@ public class ActivityServiceImpl implements ActivityService{
 
 
     }
+    @Override
+    public String findActivityByUid(String uid) {
+        //查找该活动并返回：该活动需要招募的身份是参赛者还是观众
+
+        final Activity activityByUid = activityRepository.findByUid(uid);
+        if(activityByUid != null){
+            final Short whoAmI = activityByUid.getWhoAmI();
+            switch (whoAmI){
+                case 1:
+                    return "参赛者";
+                case 2:
+                    return "观众";
+                case 3:
+                    return "工作人员";
+            }
+        }
+
+        return null;
+    }
     /**
      * 加入了缓存的活动列表：
      */

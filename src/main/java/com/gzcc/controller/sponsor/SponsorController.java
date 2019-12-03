@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -70,7 +73,36 @@ public class SponsorController {
 
     }
 
-//    public ResponseEntity<String> enroll(){
+    /**
+     * 活动报名
+     * @param uid 活动的id号
+     * @return
+     */
+    @ApiOperation(value = "活动报名",notes = "点击立即报名，返回可供学生选择的身份")
+    @ApiImplicitParam(name = "uid",value = "要报名的活动id号")
+    @PostMapping("activities/signActivity")
+    public ResponseEntity<String> signActivity(@RequestBody String uid){
+        if(StringUtils.isEmpty(uid)){
+            return ResponseEntity.badRequest().body("无效活动号");
+        }
+        String enrolmentStatus  = activityService.findActivityByUid(uid);
+
+        return new ResponseEntity<String>(enrolmentStatus,HttpStatus.OK);
+
+    }
+
+    /**
+     * 确认报名
+     * @param uid 活动的id号
+     * @return
+     */
+//    @ApiOperation(value = "活动报名",notes = "点击立即报名，返回可供学生选择的身份")
+//    @ApiImplicitParam(name = "uid",value = "要报名的活动id号")
+//    @PostMapping("activities/confirmEnroll")
+//    public ResponseEntity<String> confirmSignActivity(@RequestBody String uid){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//
 //
 //    }
 

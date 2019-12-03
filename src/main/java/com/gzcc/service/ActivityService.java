@@ -26,4 +26,6 @@ public interface ActivityService {
      * @return
      */
     Activity getActivityDetails(String uid);
+
+    String findActivityByUid(String uid);
 }
