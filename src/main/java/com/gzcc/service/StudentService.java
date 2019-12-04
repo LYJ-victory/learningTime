@@ -34,8 +34,12 @@ public interface StudentService {
      */
     String refresh(String oldToken);
 
-
-
+    /**
+     * 获取个人基本信息
+     * @param myId
+     * @return
+     */
+    Student getMyInformationById(String myId);
 }
 
 

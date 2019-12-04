@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 
 /**
  * Created by ASUS on 2019/11/17.
@@ -113,6 +115,22 @@ public class StudentServiceImpl implements StudentService{
 
         return null;
     }
+
+    /**
+     * 获取个人信息：
+     * @param myId
+     * @return
+     */
+    @Override
+    public Student getMyInformationById(String myId) {
+
+        final Optional<Student> me = studentRepository.findById(myId);
+        if(me == null){
+            return new Student();
+        }
+        return me.get();
+    }
+
     /**
      * 发送注册成功的Email提醒：：
      */

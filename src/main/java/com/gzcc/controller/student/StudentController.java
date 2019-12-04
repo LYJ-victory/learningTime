@@ -49,11 +49,13 @@ public class StudentController {
     /**
      * 个人信息：
      */
-    @GetMapping(value = "CreateSimpleExcelToDisk")
-    public ResponseEntity<Student> test(){
+    @ApiOperation(value = "个人信息",notes = "返回的个人信息中username、credentialsNonExpired、accountNonExpired、authorities是没有用的")
+    @PostMapping(value = "myInformation")
+    public ResponseEntity<Student> getMyInformation(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("oauth是：",authentication.getDetails());
-        return new ResponseEntity(authentication.getDetails(),HttpStatus.OK);
+        String myId = (String) authentication.getPrincipal();
+        Student me = studentService.getMyInformationById(myId);
+        return new ResponseEntity(me,HttpStatus.OK);
     }
 
 }
