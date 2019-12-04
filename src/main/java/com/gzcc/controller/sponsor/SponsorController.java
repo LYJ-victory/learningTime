@@ -3,11 +3,13 @@ package com.gzcc.controller.sponsor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gzcc.common.Const;
 import com.gzcc.pojo.Activity;
+import com.gzcc.pojo.Student;
 import com.gzcc.pojo.TempActivity;
 import com.gzcc.pojo.response.ActivityListVO;
 import com.gzcc.service.ActivityService;
 import com.gzcc.service.RedisService;
 import com.gzcc.service.StudentActivitiesService;
+import com.gzcc.service.StudentService;
 import com.gzcc.utils.QRCodeUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -43,6 +45,9 @@ public class SponsorController {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private StudentService studentService;
 
 
     /**
@@ -120,15 +125,16 @@ public class SponsorController {
     @PostMapping("activities/confirmEnroll")
     public ResponseEntity<String> confirmSignActivity(@RequestBody String uid) throws IOException {
 
-        final TempActivity myUid = objectMapper.readValue(uid, TempActivity.class);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final String studentId = (String) authentication.getPrincipal();
+
+        final TempActivity myActivityUid = objectMapper.readValue(uid, TempActivity.class);
         //判断缓存中是否有：
-        final String activity_join_type = redisService.get(myUid.getUid());
+        final String activity_join_type = redisService.get(myActivityUid.getUid());
         if(org.apache.commons.lang3.StringUtils.isEmpty(activity_join_type)){
             return ResponseEntity.badRequest().body("活动已失效");
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final String studentId = (String) authentication.getPrincipal();
-        String result = studentActivitiesService.InsertStudentId(myUid.getUid(),activity_join_type,studentId);
+        String result = studentActivitiesService.InsertStudentId(myActivityUid.getUid(),activity_join_type,studentId);
         if("success".equals(result)){
             return new ResponseEntity<String>(result,HttpStatus.OK);
         }

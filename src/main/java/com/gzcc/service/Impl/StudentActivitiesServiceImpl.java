@@ -22,6 +22,13 @@ public class StudentActivitiesServiceImpl implements StudentActivitiesService {
 //    @Transactional
     public String InsertStudentId(String uid, String activity_join_type,String studentId) {
 
+        //防止重复报名：
+            //查看关联表的status是否是已参加：
+        final StudentActivities byStudentIdAndActivityId = studentActivitiesRepository.findByStudentIdAndActivityId(studentId, uid);
+        if(byStudentIdAndActivityId != null){
+            return "不能重复报名";
+        }
+
         StudentActivities studentActivities = new StudentActivities();
         studentActivities.setActivityId(uid);
         studentActivities.setStudentId(studentId);
