@@ -2,6 +2,7 @@ package com.gzcc.controller.student;
 
 import com.gzcc.pojo.Student;
 import com.gzcc.pojo.response.CreditVo;
+import com.gzcc.pojo.response.StudentVO;
 import com.gzcc.security.MyUserDetailsService;
 import com.gzcc.service.StudentService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -49,13 +50,15 @@ public class StudentController {
     /**
      * 个人信息：
      */
-    @ApiOperation(value = "个人信息",notes = "返回的个人信息中username、credentialsNonExpired、accountNonExpired、authorities是没有用的")
+    @ApiOperation(value = "个人信息",notes = "返回的个人信息")
     @PostMapping(value = "myInformation")
-    public ResponseEntity<Student> getMyInformation(){
+    public ResponseEntity<StudentVO> getMyInformation(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String myId = (String) authentication.getPrincipal();
         Student me = studentService.getMyInformationById(myId);
-        return new ResponseEntity(me,HttpStatus.OK);
+        StudentVO studentVO = new StudentVO();
+        BeanUtils.copyProperties(me,studentVO);
+        return new ResponseEntity(studentVO,HttpStatus.OK);
     }
 
 }
