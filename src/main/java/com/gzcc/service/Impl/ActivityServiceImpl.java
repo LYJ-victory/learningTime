@@ -6,6 +6,7 @@ import com.gzcc.pojo.response.ActivityListVO;
 import com.gzcc.repository.ActivityRepository;
 import com.gzcc.service.ActivityService;
 import com.gzcc.service.RedisService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -93,35 +94,25 @@ public class ActivityServiceImpl implements ActivityService{
 
     }
     @Override
-    public String findActivityByUid(String uid) {
+    public int findActivityByUid(String uid) {
         //查找该活动并返回：该活动需要招募的身份是参赛者还是观众
-        String tempType ="";
+
         //缓存中没有：
        try{
-           if(redisService.get(uid) == null){
+           if(StringUtils.isEmpty(redisService.get(uid))){
                final Optional<Activity> activityByUid = activityRepository.findById(uid);
-//            if(activityByUid.get() != null){
                final int join_type = activityByUid.get().getJoin_type();
-               switch (join_type){
-                   case 1:
-                       tempType = "参赛者";
-                       break;
-                   case 2:
-                       tempType =  "观众";
-                       break;
-                   default:
-                       break;
-               }
-//            }
-               redisService.set(uid,tempType);
+//               存放到缓存中：
+               redisService.set(uid,String.valueOf(join_type));
                redisService.expire(uid,Const.ACTIVITY_EXPIRE_SECONDS);//设置过期时间是在活动报名结束之前
+               return join_type;
            }
        }catch (Exception e){
-           return "";
+           return 0;
        }
         //缓存中有：
         String activity_join_type = redisService.get(uid);
-        return activity_join_type;
+        return Integer.valueOf(activity_join_type);
 
     }
     /**

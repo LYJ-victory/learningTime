@@ -6,7 +6,9 @@ import com.gzcc.pojo.Activity;
 import com.gzcc.pojo.TempActivity;
 import com.gzcc.pojo.response.ActivityListVO;
 import com.gzcc.service.ActivityService;
+import com.gzcc.service.RedisService;
 import com.gzcc.service.StudentActivitiesService;
+import com.gzcc.utils.QRCodeUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,6 +40,9 @@ public class SponsorController {
 
     @Autowired
     private StudentActivitiesService studentActivitiesService;
+
+    @Autowired
+    private RedisService redisService;
 
 
     /**
@@ -88,19 +94,19 @@ public class SponsorController {
      * @param uid 活动的id号
      * @return
      */
-    @ApiOperation(value = "活动报名",notes = "点击立即报名，返回可供学生选择的身份")
-    @ApiImplicitParam(name = "uid",value = "要报名的活动id号")
-    @PostMapping("activities/signActivity")
+    @ApiOperation(value = "立即报名",notes = "点击立即报名，返回0：无效，1：参赛者，2：观众")
+    @ApiImplicitParam(name = "uid",value = "要报名的活动id号",dataType = "String")
+    @PostMapping("activities/enroll")
     public ResponseEntity<String> signActivity(@RequestBody String uid) throws IOException {
 
-        final TempActivity newUid = objectMapper.readValue(uid, TempActivity.class);
+        final TempActivity newUid = objectMapper.readValue(uid,TempActivity.class);
 
         if(StringUtils.isEmpty(newUid)){
             return ResponseEntity.badRequest().body("无效活动号");
         }
-        String enrolmentStatus  = activityService.findActivityByUid(newUid.getUid());
+        int enrolmentStatus  = activityService.findActivityByUid(newUid.getUid());
 
-        return new ResponseEntity<String>(enrolmentStatus,HttpStatus.OK);
+        return new ResponseEntity<String>(String.valueOf(enrolmentStatus),HttpStatus.OK);
 
     }
 
@@ -109,14 +115,44 @@ public class SponsorController {
      * @param uid 活动的id号
      * @return
      */
-//    @ApiOperation(value = "活动报名",notes = "点击立即报名，返回可供学生选择的身份")
-//    @ApiImplicitParam(name = "uid",value = "要报名的活动id号")
-//    @PostMapping("activities/confirmEnroll")
-//    public ResponseEntity<String> confirmSignActivity(@RequestBody String uid){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        final String studentId = (String) authentication.getPrincipal();
-//        studentActivitiesService.InsertStudentId();
-//
-//    }
+    @ApiOperation(value = "确认报名",notes = "报名成功返回success，报名失败返回failed")
+    @ApiImplicitParam(name = "uid",value = "要报名的活动id号",dataType = "String")
+    @PostMapping("activities/confirmEnroll")
+    public ResponseEntity<String> confirmSignActivity(@RequestBody String uid) throws IOException {
+
+        final TempActivity myUid = objectMapper.readValue(uid, TempActivity.class);
+        //判断缓存中是否有：
+        final String activity_join_type = redisService.get(myUid.getUid());
+        if(org.apache.commons.lang3.StringUtils.isEmpty(activity_join_type)){
+            return ResponseEntity.badRequest().body("活动已失效");
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final String studentId = (String) authentication.getPrincipal();
+        String result = studentActivitiesService.InsertStudentId(myUid.getUid(),activity_join_type,studentId);
+        if("success".equals(result)){
+            return new ResponseEntity<String>(result,HttpStatus.OK);
+        }
+        return ResponseEntity.badRequest().body(result);
+    }
+    @ApiOperation(value = "签到二维码",notes = "主办方通过调用该方法得到一个签到二维码给学生签到")
+    public ResponseEntity<String> SignInCode() throws Exception {
+
+//        主办方这边应该要有一个表，就是主办方发布那些活动的表，这里才能在二维码里面写入活动的id号
+        //TODO
+        //TODO
+        //TODO
+
+
+        // 存放在二维码中的内容
+        String text = "我是小铭";
+        // 嵌入二维码的图片路径
+        String imgPath = "G:/qrCode/dog.jpg";
+        // 生成的二维码的路径及名称
+        String destPath = "G:/qrCode/qrcode/jam.jpg";
+        //生成二维码
+        QRCodeUtil.encode(text, imgPath, destPath, true);
+
+        return ResponseEntity.ok("success");
+    }
 
 }

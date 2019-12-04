@@ -27,5 +27,5 @@ public interface ActivityService {
      */
     Activity getActivityDetails(String uid);
 
-    String findActivityByUid(String uid);
+    int findActivityByUid(String uid);
 }
