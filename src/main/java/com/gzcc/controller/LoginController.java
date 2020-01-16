@@ -135,6 +135,7 @@ public class LoginController {
     }
     /**
      * 登录：
+     * 登录路径：http://localhost:8080/api/login
      */
     //略。
     /**

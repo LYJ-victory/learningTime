@@ -3,10 +3,12 @@ package com.gzcc.service.Impl;
 import com.gzcc.common.Const;
 import com.gzcc.pojo.Activity;
 import com.gzcc.pojo.response.ActivityListVO;
+import com.gzcc.pojo.response.ActivityVO;
 import com.gzcc.repository.ActivityRepository;
 import com.gzcc.service.ActivityService;
 import com.gzcc.service.RedisService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -177,7 +179,13 @@ public class ActivityServiceImpl implements ActivityService{
 
         activityListVO.setNext(Const.pageNext+nextPage);//下一页
         activityListVO.setPrevious(Const.pagePre+prePage);//上一页
+
+//        ActivityVO activityVO = new ActivityVO();
+//        List<ActivityVO> activityVOList = new ArrayList<>();
         if(example != null){//按学时类型筛选
+
+//            BeanUtils.copyProperties(activityRepository.findAll(example,pageable).getContent(),activityVOList);
+
             activityListVO.setResults(activityRepository.findAll(example,pageable).getContent());
             return activityListVO;
         }

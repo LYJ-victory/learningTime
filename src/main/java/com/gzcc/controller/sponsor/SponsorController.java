@@ -148,7 +148,6 @@ public class SponsorController {
         //TODO
         //TODO
 
-
         // 存放在二维码中的内容
         String text = "我是小铭";
         // 嵌入二维码的图片路径
