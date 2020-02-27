@@ -46,8 +46,6 @@ public class LoginController {
     @Autowired
     private RedisService redisService;
 
-//    @Value("${jwt.header}")
-//    private String tokenHeader;
     /**
      * 注册：学号+密码+重复密码+邮箱
      */
@@ -89,20 +87,6 @@ public class LoginController {
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-    /**
-     * 刷新token：
-     */
-//    @RequestMapping(value = "/auth/refresh", method = RequestMethod.GET)
-//    public ResponseEntity<?> refreshAndGetAuthenticationToken(
-//            HttpServletRequest request) throws AuthenticationException{
-//        String token = request.getHeader(tokenHeader);
-//        String refreshedToken = studentService.refresh(token);
-//        if(refreshedToken == null) {
-//            return ResponseEntity.badRequest().body(null);
-//        } else {
-//            return ResponseEntity.ok(refreshedToken);
-//        }
-//    }
 
     /**
      * 获取邮箱验证码：
@@ -114,7 +98,7 @@ public class LoginController {
     @ApiOperation(value = "获取邮箱验证码",notes = "返回：成功：success，失败：failed")
     @ApiImplicitParam(name = "email",value = "要注册的邮箱",paramType = "query")
     @PostMapping("/auth/email")
-    public ResponseEntity<String> getEmailVerificationCode(@RequestBody String email) throws IOException {
+    public ResponseEntity<String> getEmailVerificationCode(@RequestBody  String email) throws IOException {
 
         final Temp newEmail = objectMapper.readValue(email, Temp.class);
 
@@ -125,13 +109,8 @@ public class LoginController {
         if(!isEmail(newEmail.getEmail())){
             return new ResponseEntity<String>("邮箱格式错误",HttpStatus.BAD_REQUEST);
         }
-        final String code = studentService.getCode(newEmail.getEmail());
-        System.out.println("结果："+code);
-        if(!"success".equals(code)){
-            return new ResponseEntity<String>("success",HttpStatus.OK);
-        }else {
-            return new ResponseEntity<String>("failed",HttpStatus.BAD_REQUEST);
-        }
+        studentService.getCode(newEmail.getEmail());
+        return new ResponseEntity<String>(Const.SUCCESS,HttpStatus.OK);
     }
     /**
      * 登录：
@@ -145,8 +124,7 @@ public class LoginController {
      */
     public boolean isEmail(String email){
         if (null==email || "".equals(email)) return false;
-//        Pattern p = Pattern.compile("\\w+@(\\w+.)+[a-z]{2,3}"); //简单匹配
-        Pattern p =  Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");//复杂匹配
+        Pattern p =  Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
         Matcher m = p.matcher(email);
         return m.matches();
     }

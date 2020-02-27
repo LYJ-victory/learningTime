@@ -4,10 +4,14 @@ import com.gzcc.common.Const;
 import com.gzcc.config.properties.MailProperties;
 import com.gzcc.pojo.Student;
 import com.gzcc.pojo.request.RegisterBO;
+import com.gzcc.pojo.response.EmailVO;
 import com.gzcc.repository.StudentRepository;
+import com.gzcc.service.RabbitSendService;
 import com.gzcc.service.RedisService;
 import com.gzcc.service.StudentService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -27,6 +31,8 @@ import java.util.Optional;
 @Service
 public class StudentServiceImpl implements StudentService{
 
+    private static Logger log = LoggerFactory.getLogger(StudentService.class);
+
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
@@ -37,9 +43,13 @@ public class StudentServiceImpl implements StudentService{
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private RabbitSendService rabbitSendService;
+
     /**
      * 查询学时：
      */
+    @Override
     public Student findCreditByUid(String uid){
         try{
             if(StringUtils.isEmpty(uid)){
@@ -55,6 +65,7 @@ public class StudentServiceImpl implements StudentService{
      * 注册：
      */
     @Transactional
+    @Override
     public Boolean register(RegisterBO registerBO) {
         //检查邮箱校验码：
         String redisEmailCode = redisService.get(registerBO.getEmail());
@@ -69,7 +80,6 @@ public class StudentServiceImpl implements StudentService{
             return false;
         }
         registerBO.setPassword(bCryptPasswordEncoder.encode(registerBO.getPassword()));
-        System.out.println("注册密码："+registerBO.getPassword());
         Student student = new Student();
         BeanUtils.copyProperties(registerBO,student);
         try{
@@ -78,7 +88,9 @@ public class StudentServiceImpl implements StudentService{
             return false;
         }
         //向邮箱发送注册成功的提醒邮件：
-        SendRegisterEmail(Const.SENDEMAILCONTENT+registerBO.getUid(),registerBO.getEmail(),Const.SEND_SUCCESS_EMAIL_TITLE);
+        EmailVO emailVO = new EmailVO(Const.SEND_SUCCESS_EMAIL_TITLE,Const.SENDEMAILCONTENT+registerBO.getUid(),new String[]{registerBO.getEmail()});
+        //rabbitmq异步邮件通知
+        rabbitSendService.sendEmailCodeNotice(emailVO);
         return true;
 
     }
@@ -89,33 +101,24 @@ public class StudentServiceImpl implements StudentService{
      */
     @Async
     @Override
-    public String getCode(String email) {
+    public void getCode(String email) {
 
         try{
             // 生成随机4位数
             String code = RandomStringUtils.randomNumeric(4);
-            System.out.println("code" + code);
-            redisService.set(email, code);   //缓存新的key-value值
-            redisService.expire(email,Const.CODE_EXPIRE_SECONDS);  //设置过期时间   CODE_EXPIRE_SECONDS
-            this.SendRegisterEmail("您的账户激活验证码为: "+code,email,Const.SENDEMAILTITLE);
+            //缓存新的key-value值
+            redisService.set(email, code);
+            //设置过期时间   CODE_EXPIRE_SECONDS
+            redisService.expire(email,Const.CODE_EXPIRE_SECONDS);
+            EmailVO emailVO = new EmailVO(Const.SENDEMAILTITLE,"您的账户激活验证码为: "+code,new String[]{email});
+            //rabbitmq异步邮件通知
+            rabbitSendService.sendEmailCodeNotice(emailVO);
+
         }catch (Exception e){
-            return "failed";
+           log.error("向邮箱{}异步出错",email);
         }
-        return "success";
+
     }
-
-    /**
-     * 刷新token：
-     * @param oldToken
-     * @return
-     */
-    @Override
-    public String refresh(String oldToken) {
-
-
-        return null;
-    }
-    //
     /**
      * 获取个人信息：
      * @param myId
@@ -131,18 +134,6 @@ public class StudentServiceImpl implements StudentService{
         return me.get();
     }
 
-    /**
-     * 发送注册成功的Email提醒：：
-     */
-    public void SendRegisterEmail(String message,String ToEmail,String emailTitle){
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(Const.Email_BOSS);
-        mailMessage.setTo(ToEmail);
-        mailMessage.setSubject(emailTitle);//标题
-        mailMessage.setText(message);
-        javaMailSender.send(mailMessage);
-        System.out.println("成功");
-    }
     /**
      * 登录：
      * @param response

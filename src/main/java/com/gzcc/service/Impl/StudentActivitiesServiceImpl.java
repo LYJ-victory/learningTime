@@ -1,5 +1,6 @@
 package com.gzcc.service.Impl;
 
+import com.gzcc.common.Const;
 import com.gzcc.pojo.StudentActivities;
 import com.gzcc.repository.StudentActivitiesRepository;
 import com.gzcc.service.StudentActivitiesService;
@@ -19,7 +20,6 @@ public class StudentActivitiesServiceImpl implements StudentActivitiesService {
     private StudentActivitiesRepository studentActivitiesRepository;
 
     @Override
-//    @Transactional
     public String InsertStudentId(String uid, String activity_join_type,String studentId) {
 
         //防止重复报名：
@@ -33,7 +33,7 @@ public class StudentActivitiesServiceImpl implements StudentActivitiesService {
         studentActivities.setActivityId(uid);
         studentActivities.setStudentId(studentId);
         studentActivities.setJoinType(Short.valueOf(activity_join_type));
-        studentActivities.setStatus(Short.parseShort("1"));//已参加
+        studentActivities.setStatus(Short.parseShort("1"));
 
         LocalDateTime time = LocalDateTime.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -47,9 +47,9 @@ public class StudentActivitiesServiceImpl implements StudentActivitiesService {
              final StudentActivities save = studentActivitiesRepository.save(studentActivities);
              System.out.println(save);
          }catch (Exception e){
-             return "failed";
+             return Const.FAILED;
          }
 
-        return "success";
+        return Const.SUCCESS;
     }
 }

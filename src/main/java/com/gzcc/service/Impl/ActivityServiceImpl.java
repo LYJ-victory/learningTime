@@ -14,6 +14,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,7 +88,6 @@ public class ActivityServiceImpl implements ActivityService{
         try {
 
             Optional<Activity> activityById = activityRepository.findById(uid);
-            System.out.println(activityById.get());
             return activityById.get();
         }catch (Exception e){
             return null;
@@ -117,6 +117,7 @@ public class ActivityServiceImpl implements ActivityService{
         return Integer.valueOf(activity_join_type);
 
     }
+
     /**
      * 加入了缓存的活动列表：
      */

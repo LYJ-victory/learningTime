@@ -3,6 +3,7 @@ package com.gzcc.service;
 import com.gzcc.pojo.Activity;
 import com.gzcc.pojo.response.ActivityListVO;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -28,4 +29,5 @@ public interface ActivityService {
     Activity getActivityDetails(String uid);
 
     int findActivityByUid(String uid);
+
 }

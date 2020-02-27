@@ -5,10 +5,11 @@ package com.gzcc.service;
  */
 public interface StudentActivitiesService {
     /**
-     * 确认报名
+     * 确认报名(报名成功)
      * @param uid
      * @param studentId
      * @return
      */
     String InsertStudentId(String uid,String activity_join_type, String studentId);
+
 }

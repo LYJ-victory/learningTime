@@ -61,6 +61,11 @@ public class Const {
     public static String myJwtSecret = "gzccNice";
     //过期时长：30天：
     public static long expertTime =  60 * 60 * 24 * 1000;
+    /**
+     * 一般结果通知
+     */
+    public static final String SUCCESS = "success";
+    public static final String FAILED = "failed";
 
 }
 

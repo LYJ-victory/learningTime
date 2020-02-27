@@ -68,15 +68,12 @@ public class SponsorController {
                                                          @RequestParam(required = false,defaultValue = "0",name = "condition") Integer condition ,
                                                          @RequestParam(required = false,name = "activityType") String activityType ){
 
-        int pageSize = Const.pageSize;//每页展示4条数据
+        int pageSize = Const.pageSize;
 
         ActivityListVO result = activityService.getAllActivity(page, pageSize, condition, activityType);
 
-        if (result.getResults().size() > 0){
-            return new ResponseEntity<ActivityListVO>(result, HttpStatus.OK);
-        }
-        //没有新的活动：
-        return new ResponseEntity<ActivityListVO>(new ActivityListVO(),HttpStatus.OK);
+//        //没有新的活动：
+        return new ResponseEntity<ActivityListVO>(result,HttpStatus.OK);
     }
     /**
      * 活动详情：需要登录才能看
@@ -85,8 +82,6 @@ public class SponsorController {
     @ApiImplicitParam(name = "uid",value = "活动的id号",paramType = "path",dataType = "String")
     @GetMapping("activities/{uid}")
     public ResponseEntity<Activity> getActivityDetails(@PathVariable String uid ){
-
-        System.out.println("uid是"+uid);
 
         Activity activityDetails = activityService.getActivityDetails(uid);
 
@@ -135,29 +130,10 @@ public class SponsorController {
             return ResponseEntity.badRequest().body("活动已失效");
         }
         String result = studentActivitiesService.InsertStudentId(myActivityUid.getUid(),activity_join_type,studentId);
-        if("success".equals(result)){
+        if(Const.SUCCESS.equals(result)){
             return new ResponseEntity<String>(result,HttpStatus.OK);
         }
         return ResponseEntity.badRequest().body(result);
-    }
-    @ApiOperation(value = "签到二维码",notes = "主办方通过调用该方法得到一个签到二维码给学生签到")
-    public ResponseEntity<String> SignInCode() throws Exception {
-
-//        主办方这边应该要有一个表，就是主办方发布那些活动的表，这里才能在二维码里面写入活动的id号
-        //TODO
-        //TODO
-        //TODO
-
-        // 存放在二维码中的内容
-        String text = "我是小铭";
-        // 嵌入二维码的图片路径
-        String imgPath = "G:/qrCode/dog.jpg";
-        // 生成的二维码的路径及名称
-        String destPath = "G:/qrCode/qrcode/jam.jpg";
-        //生成二维码
-        QRCodeUtil.encode(text, imgPath, destPath, true);
-
-        return ResponseEntity.ok("success");
     }
 
 }

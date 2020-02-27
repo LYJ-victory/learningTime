@@ -28,11 +28,7 @@ public interface StudentService {
     /**
      * 发送邮箱验证码：
      */
-    String getCode(String email);
-    /**
-     * 刷新token：
-     */
-    String refresh(String oldToken);
+    void getCode(String email);
 
     /**
      * 获取个人基本信息
