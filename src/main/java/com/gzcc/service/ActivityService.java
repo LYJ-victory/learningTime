@@ -28,6 +28,9 @@ public interface ActivityService {
      */
     Activity getActivityDetails(String uid);
 
-    void findActivityByUid(String uid);
-
+    /**
+     * 已报活动列表
+     * @return
+     */
+    ActivityListVO getAllReportedActivity(Integer nowPage, int pageSize, String studentId, Short status);
 }

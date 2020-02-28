@@ -2,9 +2,11 @@ package com.gzcc.service.Impl;
 
 import com.gzcc.common.Const;
 import com.gzcc.pojo.Activity;
+import com.gzcc.pojo.StudentActivities;
 import com.gzcc.pojo.response.ActivityListVO;
 import com.gzcc.pojo.response.ActivityVO;
 import com.gzcc.repository.ActivityRepository;
+import com.gzcc.repository.StudentActivitiesRepository;
 import com.gzcc.service.ActivityService;
 import com.gzcc.service.RedisService;
 import org.apache.commons.lang3.StringUtils;
@@ -29,10 +31,7 @@ public class ActivityServiceImpl implements ActivityService{
     private ActivityRepository activityRepository;
 
     @Autowired
-    private RedisTemplate redisTemplate;
-
-    @Autowired
-    private RedisService redisService;
+    private StudentActivitiesRepository studentActivitiesRepository;
 
 
     /**
@@ -96,64 +95,7 @@ public class ActivityServiceImpl implements ActivityService{
 
 
     }
-    @Override
-    public void findActivityByUid(String uid) {
-//        //查找该活动并返回：该活动需要招募的身份是参赛者还是观众
-//
-//        //缓存中没有：
-//       try{
-//           if(StringUtils.isEmpty(redisService.get(uid))){
-//               final Optional<Activity> activityByUid = activityRepository.findById(uid);
-//               final int join_type = activityByUid.get().getJoin_type();
-//               redisService.set(uid,String.valueOf(join_type));
-//               //TODO:设置过期时间是在活动报名结束之前
-//               redisService.expire(uid,Const.ACTIVITY_EXPIRE_SECONDS);
-//           }
-//       }catch (Exception e){
-//           return 0;
-//       }
-//        //缓存中有：
-//        String activity_join_type = redisService.get(uid);
-//        return Integer.valueOf(activity_join_type);
 
-    }
-
-    /**
-     * 加入了缓存的活动列表：
-     */
-//    private ActivityListVO makeRedisActivityListVO(Pageable pageable,Example<Activity> example){
-//        //如果example为空，缓存中有就从缓存中拿无条件的page
-//        //如果example不为空，缓存中有就从缓存中拿按条件的page
-//        if(example == null){
-//            final Boolean flag = redisTemplate.hasKey("NoConditionPage");
-//            if (flag){
-////                Page<Activity> page = redisTemplate.get
-//            }
-//        }
-//
-//        Page<Activity> page = activityRepository.findAll(pageable);
-//
-//        redisTemplate.opsForList().rightPushAll("NoConditionPage",page);
-//        ActivityListVO activityListVO = new ActivityListVO();
-//        activityListVO.setCount((int) page.getTotalElements());//总记录数
-//        activityListVO.setCurrent(page.getNumber());//当前页
-//        int nextPage = page.getNumber()<page.getTotalPages()?page.getNumber()+1:page.getNumber() == page.getTotalPages()?page.getTotalPages():null;
-//        int prePage = page.getNumber()>0?page.getNumber()-1:page.getNumber()==0?0:null;
-//
-////        int nextPage = page.getNumber() <= page.getTotalPages()?page.getNumber()+1:null;
-////        int prePage = page.getNumber()>0?page.getNumber()-1:page.getNumber()==0?0:null;
-//
-//
-//        activityListVO.setNext(Const.pageNext+nextPage);//下一页
-//        activityListVO.setPrevious(Const.pagePre+prePage);//上一页
-//        if(example != null){//按学时类型筛选
-//            activityListVO.setResults(activityRepository.findAll(example,pageable).getContent());
-//            return activityListVO;
-//        }
-//        activityListVO.setResults(activityRepository.findAll(pageable).getContent());
-//
-//        return activityListVO;
-//    }
 
     /**
      * 返回活动列表
@@ -161,6 +103,7 @@ public class ActivityServiceImpl implements ActivityService{
      * @param example
      * @return
      */
+
     private ActivityListVO makeactivityListVO(Pageable pageable,Example<Activity> example){
 
 
@@ -194,6 +137,40 @@ public class ActivityServiceImpl implements ActivityService{
 
         return activityListVO;
 
+
+    }
+
+    /**
+     * 已报活动列表与历史活动表
+     * @param nowPage
+     * @param pageSize
+     * @param studentId
+     * @param status
+     * @return
+     */
+    @Override
+    public ActivityListVO getAllReportedActivity(Integer nowPage, int pageSize, String studentId, Short status){
+
+        try{
+            List<Activity> activities = activityRepository.findAll();
+            List<Activity> activities2 =  new ArrayList<>();
+            for (int i = 0;i < activities.size();i++){
+                StudentActivities byStudentIdAndActivityId = studentActivitiesRepository.findByStudentIdAndActivityId(studentId, activities.get(i).getUid());
+                if((byStudentIdAndActivityId != null)&&(status.equals(studentActivitiesRepository.findByStatus(activities.get(i).getUid())) )){
+                    activities2.add(activities.get(i));
+                }
+            }
+            ActivityListVO activityListVO = new ActivityListVO();
+
+
+            activityListVO.setResults(activities2);
+
+            return activityListVO;
+        }
+        catch (Exception e){
+            System.out.println(e);
+            return new ActivityListVO();
+        }
 
     }
 }

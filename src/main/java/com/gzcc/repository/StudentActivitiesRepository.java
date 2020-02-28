@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface StudentActivitiesRepository extends JpaRepository<StudentActivities,String>{
 
     StudentActivities findByStudentIdAndActivityId(String studentId,String activityId);
+
+    Short findByStatus(String activityId);
 }
