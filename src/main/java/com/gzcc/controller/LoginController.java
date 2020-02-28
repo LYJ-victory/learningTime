@@ -103,7 +103,7 @@ public class LoginController {
         final Temp newEmail = objectMapper.readValue(email, Temp.class);
 
         if(redisService.get(newEmail.getEmail())!= null){
-            return new ResponseEntity<String>("5分钟后重新发送验证码",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("5分钟后重新发送验证码",HttpStatus.OK);
         }
 
         if(!isEmail(newEmail.getEmail())){

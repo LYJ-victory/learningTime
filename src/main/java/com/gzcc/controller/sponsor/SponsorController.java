@@ -89,26 +89,26 @@ public class SponsorController {
 
     }
 
-    /**
-     * 活动报名
-     * @param uid 活动的id号
-     * @return
-     */
-    @ApiOperation(value = "立即报名",notes = "点击立即报名，返回0：无效，1：参赛者，2：观众")
-    @ApiImplicitParam(name = "uid",value = "要报名的活动id号",dataType = "String")
-    @PostMapping("activities/enroll")
-    public ResponseEntity<String> signActivity(@RequestBody String uid) throws IOException {
-
-        final TempActivity newUid = objectMapper.readValue(uid,TempActivity.class);
-
-        if(StringUtils.isEmpty(newUid)){
-            return ResponseEntity.badRequest().body("无效活动号");
-        }
-        int enrolmentStatus  = activityService.findActivityByUid(newUid.getUid());
-
-        return new ResponseEntity<String>(String.valueOf(enrolmentStatus),HttpStatus.OK);
-
-    }
+//    /**
+//     * 活动报名
+//     * @param uid 活动的id号
+//     * @return
+//     */
+//    @ApiOperation(value = "立即报名",notes = "点击立即报名，返回0：无效，1：参赛者，2：观众")
+//    @ApiImplicitParam(name = "uid",value = "要报名的活动id号",dataType = "String")
+//    @PostMapping("activities/enroll")
+//    public ResponseEntity<String> signActivity(@RequestBody String uid) throws IOException {
+//
+//        final TempActivity newUid = objectMapper.readValue(uid,TempActivity.class);
+//
+//        if(StringUtils.isEmpty(newUid)){
+//            return ResponseEntity.badRequest().body("无效活动号");
+//        }
+//        int enrolmentStatus  = activityService.findActivityByUid(newUid.getUid());
+//
+//        return new ResponseEntity<String>(String.valueOf(enrolmentStatus),HttpStatus.OK);
+//
+//    }
 
     /**
      * 确认报名
@@ -125,11 +125,11 @@ public class SponsorController {
 
         final TempActivity myActivityUid = objectMapper.readValue(uid, TempActivity.class);
         //判断缓存中是否有：
-        final String activity_join_type = redisService.get(myActivityUid.getUid());
+        String activity_join_type = redisService.get(Const.REDIS_ACTIVITY_PRE+myActivityUid.getUid());
         if(org.apache.commons.lang3.StringUtils.isEmpty(activity_join_type)){
             return ResponseEntity.badRequest().body("活动已失效");
         }
-        String result = studentActivitiesService.InsertStudentId(myActivityUid.getUid(),activity_join_type,studentId);
+        String result = studentActivitiesService.InsertStudentId(myActivityUid.getUid(),studentId);
         if(Const.SUCCESS.equals(result)){
             return new ResponseEntity<String>(result,HttpStatus.OK);
         }

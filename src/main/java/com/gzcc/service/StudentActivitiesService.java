@@ -10,6 +10,6 @@ public interface StudentActivitiesService {
      * @param studentId
      * @return
      */
-    String InsertStudentId(String uid,String activity_join_type, String studentId);
+    String InsertStudentId(String uid, String studentId);
 
 }

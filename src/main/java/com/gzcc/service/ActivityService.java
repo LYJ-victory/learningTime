@@ -28,6 +28,6 @@ public interface ActivityService {
      */
     Activity getActivityDetails(String uid);
 
-    int findActivityByUid(String uid);
+    void findActivityByUid(String uid);
 
 }

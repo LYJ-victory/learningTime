@@ -11,6 +11,7 @@ public class Const {
      * 权限开放的url:
      */
     public static final List<String> IGNORE_PATHS;
+
     static {
         IGNORE_PATHS = new ArrayList<>();
         //注册
@@ -45,7 +46,8 @@ public class Const {
     public static final int CODE_EXPIRE_SECONDS = 300;
     //设置活动报名过期时间为30天：
     public static final long ACTIVITY_EXPIRE_SECONDS = 30*24*60*60;
-
+    //活动前缀
+    public static final String REDIS_ACTIVITY_PRE = ":1:activity:";
     /**
      * 活动列表页相关：
      */

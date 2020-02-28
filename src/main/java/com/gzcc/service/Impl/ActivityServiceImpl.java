@@ -63,7 +63,8 @@ public class ActivityServiceImpl implements ActivityService{
                 ExampleMatcher exampleMatcher = ExampleMatcher.matching().withMatcher("credit_type",ExampleMatcher.GenericPropertyMatchers.exact());
                 Example<Activity> example = Example.of(activity,exampleMatcher);
                 PageRequest pageable = new PageRequest(nowPage,pageSize);
-                return makeactivityListVO(pageable,example);//得到某一类型的活动列表
+                //得到某一类型的活动列表:
+                return makeactivityListVO(pageable,example);
             }
             //默认无条件展示所有新发布的活动：
             PageRequest pageable = new PageRequest(nowPage,pageSize);
@@ -96,25 +97,24 @@ public class ActivityServiceImpl implements ActivityService{
 
     }
     @Override
-    public int findActivityByUid(String uid) {
-        //查找该活动并返回：该活动需要招募的身份是参赛者还是观众
-
-        //缓存中没有：
-       try{
-           if(StringUtils.isEmpty(redisService.get(uid))){
-               final Optional<Activity> activityByUid = activityRepository.findById(uid);
-               final int join_type = activityByUid.get().getJoin_type();
-//               存放到缓存中：
-               redisService.set(uid,String.valueOf(join_type));
-               redisService.expire(uid,Const.ACTIVITY_EXPIRE_SECONDS);//设置过期时间是在活动报名结束之前
-               return join_type;
-           }
-       }catch (Exception e){
-           return 0;
-       }
-        //缓存中有：
-        String activity_join_type = redisService.get(uid);
-        return Integer.valueOf(activity_join_type);
+    public void findActivityByUid(String uid) {
+//        //查找该活动并返回：该活动需要招募的身份是参赛者还是观众
+//
+//        //缓存中没有：
+//       try{
+//           if(StringUtils.isEmpty(redisService.get(uid))){
+//               final Optional<Activity> activityByUid = activityRepository.findById(uid);
+//               final int join_type = activityByUid.get().getJoin_type();
+//               redisService.set(uid,String.valueOf(join_type));
+//               //TODO:设置过期时间是在活动报名结束之前
+//               redisService.expire(uid,Const.ACTIVITY_EXPIRE_SECONDS);
+//           }
+//       }catch (Exception e){
+//           return 0;
+//       }
+//        //缓存中有：
+//        String activity_join_type = redisService.get(uid);
+//        return Integer.valueOf(activity_join_type);
 
     }
 
