@@ -1,9 +1,8 @@
 package com.gzcc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.gzcc.common.Const;
-import com.gzcc.pojo.Temp;
+import com.gzcc.pojo.temp.Temp;
 import com.gzcc.pojo.request.RegisterBO;
 import com.gzcc.service.HttpClientService;
 import com.gzcc.service.RedisService;
@@ -12,19 +11,15 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -128,4 +123,5 @@ public class LoginController {
         Matcher m = p.matcher(email);
         return m.matches();
     }
+
 }

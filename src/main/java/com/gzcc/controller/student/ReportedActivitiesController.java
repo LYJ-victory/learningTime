@@ -1,11 +1,15 @@
 package com.gzcc.controller.student;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gzcc.common.Const;
 import com.gzcc.pojo.Activity;
 import com.gzcc.pojo.StudentActivities;
 import com.gzcc.pojo.response.ActivityListVO;
+import com.gzcc.pojo.response.ActivityReviewVO;
 import com.gzcc.pojo.response.CreditVo;
+import com.gzcc.pojo.temp.TempComment;
 import com.gzcc.service.ActivityService;
+import com.gzcc.service.CommentService;
 import com.gzcc.service.StudentActivitiesService;
 import com.gzcc.service.StudentService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -21,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 /**
  * Created by ASUS on 2020/1/30.
  */
@@ -33,6 +39,10 @@ public class ReportedActivitiesController {
     private StudentService studentService;
     @Autowired
     private ActivityService activityService;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 已报活动列表与历史活动表
@@ -64,8 +74,66 @@ public class ReportedActivitiesController {
             //没有新的活动：
             return new ResponseEntity<ActivityListVO>(new ActivityListVO(),HttpStatus.OK);
         }
-
-
-//        return new ResponseEntity<ActivityListVO>(new ActivityListVO(), HttpStatus.OK);
     }
+
+    /**
+     * 查看某项活动的评论列表
+     * @param uid
+     * @return
+     */
+    @ApiOperation(value = "评论列表",notes = "看清楚返回的是什么。我这里没有分页直接读出所有评论")
+    @ApiImplicitParam(name = "uid",value = "活动id号",paramType = "query",dataType = "String")
+    @GetMapping("ActivityReviewDetailList/{uid}")
+    @ResponseBody
+    public ResponseEntity<ActivityReviewVO> ActivityReviewDetailList(@PathVariable String uid){
+
+            ActivityReviewVO activityReviewVO = commentService.getReviewList(uid);
+            if(StringUtils.isEmpty(activityReviewVO)){
+                return new ResponseEntity<ActivityReviewVO>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<ActivityReviewVO>(activityReviewVO,HttpStatus.OK);
+    }
+
+    /**
+     * 提交活动评论
+     * @param
+     * @param
+     * @return
+     */
+    @ApiOperation(value = "提交评论",notes = "前面星标要默认最少有一颗，然后1颗代表1分")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "uid",value = "活动Id",paramType = "query",dataType = "String"),
+            @ApiImplicitParam(name = "starScore",value = "星标",paramType = "query",dataType = "String"),
+            @ApiImplicitParam(name = "commentContent",value = "评论内容",paramType = "query",dataType = "String")
+    })
+    @PostMapping("submitActivityComments")
+    @ResponseBody
+    public ResponseEntity<String> submitActivityComments(@RequestBody String tempComment) throws IOException {
+
+        TempComment temp = objectMapper.readValue(tempComment, TempComment.class);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String studentId = (String) authentication.getPrincipal();
+
+        String result =  commentService.saveComment(temp.getUid(),studentId,temp.getStarScore(),temp.getCommentContent());
+
+        if(Const.SUCCESS.equals(result)){
+            return new ResponseEntity<String>(result,HttpStatus.OK);
+        }
+        return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

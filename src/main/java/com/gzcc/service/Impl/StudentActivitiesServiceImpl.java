@@ -83,6 +83,8 @@ public class StudentActivitiesServiceImpl implements StudentActivitiesService {
 
                         studentActivitiesRepository.save(studentActivities);
 
+                        return Const.SUCCESS;
+
                     }
                 }else{
                     return Const.FAILED;
@@ -95,6 +97,6 @@ public class StudentActivitiesServiceImpl implements StudentActivitiesService {
             lock.unlock();
         }
 
-        return Const.SUCCESS;
+        return Const.FAILED;
     }
 }

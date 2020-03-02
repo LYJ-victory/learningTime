@@ -1,14 +1,13 @@
 package com.gzcc.security;
 
 import com.gzcc.common.Const;
-import com.gzcc.exception.handler.MyAccessDeniedHandler;
-import com.gzcc.exception.handler.MyAuthenticationEntryPoint;
+import com.gzcc.security.exception.MyAccessDeniedHandler;
+import com.gzcc.security.exception.MyAuthenticationEntryPoint;
 import com.gzcc.filter.JWTAuthenticationFilter;
 import com.gzcc.filter.JWTLoginFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -49,12 +48,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
 
     }
-
-
-//    @Bean
-//    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-//        return new BCryptPasswordEncoder();
-////    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

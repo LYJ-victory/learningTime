@@ -3,30 +3,23 @@ package com.gzcc.controller.sponsor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gzcc.common.Const;
 import com.gzcc.pojo.Activity;
-import com.gzcc.pojo.Student;
-import com.gzcc.pojo.TempActivity;
+import com.gzcc.pojo.temp.TempActivity;
 import com.gzcc.pojo.response.ActivityListVO;
 import com.gzcc.service.ActivityService;
 import com.gzcc.service.RedisService;
 import com.gzcc.service.StudentActivitiesService;
 import com.gzcc.service.StudentService;
-import com.gzcc.utils.QRCodeUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by ASUS on 2019/11/20.
@@ -125,10 +118,10 @@ public class SponsorController {
 
         final TempActivity myActivityUid = objectMapper.readValue(uid, TempActivity.class);
         //判断缓存中是否有：
-        String activity_join_type = redisService.get(Const.REDIS_ACTIVITY_PRE+myActivityUid.getUid());
-        if(org.apache.commons.lang3.StringUtils.isEmpty(activity_join_type)){
-            return ResponseEntity.badRequest().body("活动已失效");
-        }
+//        String activity_join_type = redisService.get(Const.REDIS_ACTIVITY_PRE+myActivityUid.getUid());
+//        if(org.apache.commons.lang3.StringUtils.isEmpty(activity_join_type)){
+//            return ResponseEntity.badRequest().body("活动已失效");
+//        }
         String result = studentActivitiesService.InsertStudentId(myActivityUid.getUid(),studentId);
         if(Const.SUCCESS.equals(result)){
             return new ResponseEntity<String>(result,HttpStatus.OK);

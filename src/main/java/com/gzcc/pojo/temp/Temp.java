@@ -1,4 +1,4 @@
-package com.gzcc.pojo;
+package com.gzcc.pojo.temp;
 
 import lombok.Data;
 

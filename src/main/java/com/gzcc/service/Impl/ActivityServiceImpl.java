@@ -40,21 +40,23 @@ public class ActivityServiceImpl implements ActivityService{
      * @param condition 按条件查询，默认不按条件查询 1：按照时间查询 2.按照类型查询
      * @param activityType 类型筛选：文体、思想、心理等
      * @return
+     *           //默认展示所有新发布的活动：
+     *          //1.表示按时间进行排序新活动
+     *         //2.表示按照类型查询活动
+     *            //1.表示按照类型查询活动
      */
     @Override
     public ActivityListVO getAllActivity(int nowPage,int pageSize,int condition ,String activityType) {
 
-        //默认展示所有新发布的活动：
-        //1.表示按时间进行排序新活动
-        //2.表示按照类型查询活动
-                //1.表示按照类型查询活动
         try{
-            if (condition == 1){//1.表示按时间进行排序新活动
+            //1.表示按时间进行排序新活动
+            if (condition == 1){
 
                 Sort sort = new Sort(Sort.Direction.ASC, "created");
                 PageRequest pageable = new PageRequest(nowPage,pageSize,sort);
                 return makeactivityListVO(pageable,null);
-            }else if(condition ==2 &&activityType != null){//2.表示按照类型查询活动
+            //2.表示按照类型查询活动
+            }else if(condition ==2 &&activityType != null){
                 Activity activity = new Activity();
                 List<String> creditTypeList = Arrays.asList("wt_credit","xl_credit","cxcy_credit","fl_credit","sxdd_credit");
                 List<String> collect = creditTypeList.stream().filter(type -> type.equals(activityType)).collect(Collectors.toList());
@@ -110,26 +112,23 @@ public class ActivityServiceImpl implements ActivityService{
         Page<Activity> page = activityRepository.findAll(pageable);
 
         ActivityListVO activityListVO = new ActivityListVO();
-        activityListVO.setCount((int) page.getTotalElements());//总记录数
-        activityListVO.setCurrent(page.getNumber());//当前页
-//        int nextPage = page.getNumber()<page.getTotalPages()?page.getNumber()+1:page.getNumber() == page.getTotalPages()?page.getTotalPages():null;
-//        int prePage = page.getNumber()>0?page.getNumber()-1:page.getNumber()==0?0:null;
+        //总记录数
+        activityListVO.setCount((int) page.getTotalElements());
+        //当前页
+        activityListVO.setCurrent(page.getNumber());
         //末页：
         PageRequest tempPageable = new PageRequest(page.getTotalPages(),Const.pageSize);
         Page<Activity> tempPage = activityRepository.findAll(tempPageable);
 
         int nextPage = page.getNumber() <= page.getTotalPages()?page.getNumber()+1:tempPage.getTotalPages();
         int prePage = page.getNumber()>0?page.getNumber()-1:page.getNumber()==0?0:null;
+        //下一页
+        activityListVO.setNext(Const.pageNext+nextPage);
+        //上一页
+        activityListVO.setPrevious(Const.pagePre+prePage);
 
-        activityListVO.setNext(Const.pageNext+nextPage);//下一页
-        activityListVO.setPrevious(Const.pagePre+prePage);//上一页
-
-//        ActivityVO activityVO = new ActivityVO();
-//        List<ActivityVO> activityVOList = new ArrayList<>();
-        if(example != null){//按学时类型筛选
-
-//            BeanUtils.copyProperties(activityRepository.findAll(example,pageable).getContent(),activityVOList);
-
+        //按学时类型筛选：
+        if(example != null){
             activityListVO.setResults(activityRepository.findAll(example,pageable).getContent());
             return activityListVO;
         }

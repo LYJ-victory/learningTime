@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.gzcc.common.Const;
-import com.gzcc.exception.MyAuthenticationException;
 import com.gzcc.pojo.Student;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -46,7 +45,6 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         final String username = (String) dataFromRequest.get("username");
         final String password = (String) dataFromRequest.get("password");
 
-        try {
             Student user = new Student();
             user.setUid(username);//这里username是学号
             user.setPassword(password);
@@ -56,10 +54,6 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
                             user.getPassword(),
                             new ArrayList<>())
             );
-        } catch (Exception e) {
-            //请先注册
-            throw new MyAuthenticationException("身份校验错误");
-        }
     }
 
     // 用户成功登录后，这个方法会被调用，我们在这个方法里生成token

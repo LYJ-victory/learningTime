@@ -3,8 +3,6 @@ package com.gzcc.pojo;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.time.LocalDateTime;
 
@@ -54,4 +52,6 @@ public class Activity {
     private String description;
 //    活动创建时间：
     private Date created;
+//    活动评分：
+    private Integer mark_score;
 }

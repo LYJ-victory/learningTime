@@ -87,10 +87,10 @@ public class StudentServiceImpl implements StudentService{
         }catch(Exception e){
             return false;
         }
-        //向邮箱发送注册成功的提醒邮件：
-        EmailVO emailVO = new EmailVO(Const.SEND_SUCCESS_EMAIL_TITLE,Const.SENDEMAILCONTENT+registerBO.getUid(),new String[]{registerBO.getEmail()});
-        //rabbitmq异步邮件通知
-        rabbitSendService.sendEmailCodeNotice(emailVO);
+//        //向邮箱发送注册成功的提醒邮件：
+//        EmailVO emailVO = new EmailVO(Const.SEND_SUCCESS_EMAIL_TITLE,Const.SENDEMAILCONTENT+registerBO.getUid(),new String[]{registerBO.getEmail()});
+//        //rabbitmq异步邮件通知
+//        rabbitSendService.sendEmailCodeNotice(emailVO);
         return true;
 
     }

@@ -1,11 +1,11 @@
 package com.gzcc.filter;
 
 import com.gzcc.common.Const;
-import com.gzcc.exception.MyAuthenticationException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -43,10 +43,9 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
 
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request)  throws UsernameNotFoundException{
         String token = request.getHeader("Authorization");
 
-//        try {
             if (token != null) {
                 // parse the token.
                 String user = Jwts.parser()
@@ -61,9 +60,6 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
                 }
                 return null;
             }
-//        }catch (Exception e){
-//            throw new MyAuthenticationException("身份校验错误");
-//        }
 
         return null;
     }

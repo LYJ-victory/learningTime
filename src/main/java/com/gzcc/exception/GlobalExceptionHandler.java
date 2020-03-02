@@ -1,4 +1,4 @@
-package com.gzcc.exception.handler;
+package com.gzcc.exception;
 
 /**
  * controller在filter之后，所以异常捕获不到，这里后面再想下怎么结合起来就能省略另外两个异常类的实现了
