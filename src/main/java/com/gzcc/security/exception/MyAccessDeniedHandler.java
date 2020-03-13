@@ -1,6 +1,7 @@
 package com.gzcc.security.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.tomcat.util.http.ResponseUtil;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -21,6 +22,7 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
 //        httpServletResponse.getWriter().println(e.getMessage());
+
         HashMap<String, String> map = new HashMap<>(2);
         map.put("msg", "认证失败");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);

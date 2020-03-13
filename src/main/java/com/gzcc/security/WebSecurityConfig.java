@@ -67,7 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 //禁用缓存：
                 .headers().cacheControl();
-        //自定义异常处理：
+        //访问没有权限处理类:
         http.exceptionHandling().authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler);
     }
 

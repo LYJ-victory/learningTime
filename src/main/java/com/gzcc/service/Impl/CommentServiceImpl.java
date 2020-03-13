@@ -7,21 +7,14 @@ import com.gzcc.pojo.Student;
 import com.gzcc.pojo.response.ActivityReviewVO;
 import com.gzcc.repository.ActivityRepository;
 import com.gzcc.repository.CommentRepository;
-import com.gzcc.repository.StudentRepository;
 import com.gzcc.service.CommentService;
 import com.gzcc.service.StudentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.IntSummaryStatistics;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
         //TODO:这里直接扫表，后面要改进下：
         List<Comment> list = commentRepository.findByActivityId(uid);
         activityReviewVO.setList(list);
-        //活动总分 =（5*5星评论数+4*4星评论数+3*3星评论数+2*2星评论数+1*1星评论数）/当前总评论数
+        //活动总分 =（5*5星评论数+4*4星评论数+3*3星评论数+2*2星评论数+1*1星评论数）/当前总评论数，再四舍五入
         float[] sumScore = {0.0f};
         //<key,value> = <某星评论分，某星评论数*某星评论分>
         list.stream().collect(Collectors.groupingBy(Comment::getScore)).forEach( (k,v) -> {
