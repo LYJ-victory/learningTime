@@ -150,15 +150,20 @@ public class ActivityServiceImpl implements ActivityService{
     @Override
     public ActivityListVO getAllReportedActivity(Integer nowPage, int pageSize, String studentId, Short status){
 
+
         try{
             List<Activity> activities = activityRepository.findAll();
             List<Activity> activities2 =  new ArrayList<>();
             for (int i = 0;i < activities.size();i++){
                 StudentActivities byStudentIdAndActivityId = studentActivitiesRepository.findByStudentIdAndActivityId(studentId, activities.get(i).getUid());
-                if((byStudentIdAndActivityId != null)&&(status.equals(studentActivitiesRepository.findByStatus(activities.get(i).getUid())) )){
-                    activities2.add(activities.get(i));
+                System.out.println(byStudentIdAndActivityId);
+                if(byStudentIdAndActivityId != null){
+                    if(byStudentIdAndActivityId.getStatus() == status){
+                        activities2.add(activities.get(i));
+                    }
                 }
             }
+            System.out.println(activities2);
             ActivityListVO activityListVO = new ActivityListVO();
 
 
@@ -170,7 +175,6 @@ public class ActivityServiceImpl implements ActivityService{
             System.out.println(e);
             return new ActivityListVO();
         }
-
     }
 }
 
