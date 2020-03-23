@@ -166,7 +166,6 @@ public class ActivityServiceImpl implements ActivityService{
 //            System.out.println(page);
             ActivityListVO activityListVO = new ActivityListVO();
 
-
             activityListVO.setResults(activities2);
 
             return activityListVO;
