@@ -48,7 +48,7 @@ public class ActivityServiceImpl implements ActivityService{
      */
     @Override
     public ActivityListVO getAllActivity(int nowPage,int pageSize,int condition ,String activityType) {
-        //选出所有有效的活动：
+        //TODO:选出所有有效的活动：
         Activity activity = new Activity();
         //要匹配的字段：
         activity.setStop(new Short("0"));
@@ -56,16 +56,14 @@ public class ActivityServiceImpl implements ActivityService{
         try{
             //1.表示按时间进行排序新活动
             if (condition == 1){
-
                 Sort sort = new Sort(Sort.Direction.ASC, "created");
                 PageRequest pageable = new PageRequest(nowPage,pageSize,sort);
                 return makeactivityListVO(pageable,example1);
             //2.表示按照类型查询活动
-            }else if(condition == 2 &&activityType != null){
-
+            }else if(condition == 2 && activityType != null){
                 List<String> creditTypeList = Arrays.asList("wt_credit","xl_credit","cxcy_credit","fl_credit","sxdd_credit");
                 List<String> collect = creditTypeList.stream().filter(type -> type.equals(activityType)).collect(Collectors.toList());
-                //要匹配的字段：
+                //TODO:要匹配的字段：
                 activity.setCredit_type(collect.get(0));
                 ExampleMatcher exampleMatcher = ExampleMatcher.matching()
                         .withMatcher("credit_type",ExampleMatcher.GenericPropertyMatchers.exact())

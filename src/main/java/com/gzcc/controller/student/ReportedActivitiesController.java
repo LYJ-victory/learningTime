@@ -88,9 +88,9 @@ public class ReportedActivitiesController {
     public ResponseEntity<ActivityReviewVO> ActivityReviewDetailList(@PathVariable String uid){
 
             ActivityReviewVO activityReviewVO = commentService.getReviewList(uid);
-            if(StringUtils.isEmpty(activityReviewVO)){
-                return new ResponseEntity<ActivityReviewVO>(HttpStatus.BAD_REQUEST);
-            }
+//            if(StringUtils.isEmpty(activityReviewVO)){
+//                return new ResponseEntity<ActivityReviewVO>(HttpStatus.BAD_REQUEST);
+//            }
             return new ResponseEntity<ActivityReviewVO>(activityReviewVO,HttpStatus.OK);
     }
 

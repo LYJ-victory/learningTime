@@ -74,13 +74,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public String saveComment(String uid,String studentId, String starScore, String commentContent) {
 
-        //查看是否评论过：
+        //1.查看是否评论过：
         Comment commented = new Comment();
         commented.setActivityId(uid);
         commented.setStudentId(studentId);
         Example<Comment> example = Example.of(commented);
         final Optional<Comment> one = commentRepository.findOne(example);
-        //不能重复提交评论：
+        //返回。不能重复提交评论：
         if(one.get() != null){
             return Const.FAILED;
         }
