@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class TempComment extends TempActivity {
 
+    private  String uid;
+
     private  String starScore;
 
     private String commentContent;
