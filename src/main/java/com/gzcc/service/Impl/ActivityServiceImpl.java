@@ -2,6 +2,7 @@ package com.gzcc.service.Impl;
 
 import com.gzcc.common.Const;
 import com.gzcc.pojo.Activity;
+import com.gzcc.pojo.Comment;
 import com.gzcc.pojo.StudentActivities;
 import com.gzcc.pojo.response.ActivityListVO;
 import com.gzcc.pojo.response.ActivityVO;
@@ -47,21 +48,28 @@ public class ActivityServiceImpl implements ActivityService{
      */
     @Override
     public ActivityListVO getAllActivity(int nowPage,int pageSize,int condition ,String activityType) {
-
+        //选出所有有效的活动：
+        Activity activity = new Activity();
+        //要匹配的字段：
+        activity.setStop(new Short("0"));
+        Example<Activity> example1 = Example.of(activity);
         try{
             //1.表示按时间进行排序新活动
             if (condition == 1){
 
                 Sort sort = new Sort(Sort.Direction.ASC, "created");
                 PageRequest pageable = new PageRequest(nowPage,pageSize,sort);
-                return makeactivityListVO(pageable,null);
+                return makeactivityListVO(pageable,example1);
             //2.表示按照类型查询活动
-            }else if(condition ==2 &&activityType != null){
-                Activity activity = new Activity();
+            }else if(condition == 2 &&activityType != null){
+
                 List<String> creditTypeList = Arrays.asList("wt_credit","xl_credit","cxcy_credit","fl_credit","sxdd_credit");
                 List<String> collect = creditTypeList.stream().filter(type -> type.equals(activityType)).collect(Collectors.toList());
+                //要匹配的字段：
                 activity.setCredit_type(collect.get(0));
-                ExampleMatcher exampleMatcher = ExampleMatcher.matching().withMatcher("credit_type",ExampleMatcher.GenericPropertyMatchers.exact());
+                ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                        .withMatcher("credit_type",ExampleMatcher.GenericPropertyMatchers.exact())
+                        .withMatcher("stop",ExampleMatcher.GenericPropertyMatchers.exact());
                 Example<Activity> example = Example.of(activity,exampleMatcher);
                 PageRequest pageable = new PageRequest(nowPage,pageSize);
                 //得到某一类型的活动列表:
@@ -70,7 +78,7 @@ public class ActivityServiceImpl implements ActivityService{
             //默认无条件展示所有新发布的活动：
             PageRequest pageable = new PageRequest(nowPage,pageSize);
 
-            return makeactivityListVO(pageable,null);
+            return makeactivityListVO(pageable,example1);
         }catch (Exception e){
             return new ActivityListVO();
         }

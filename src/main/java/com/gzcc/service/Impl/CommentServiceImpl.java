@@ -11,6 +11,8 @@ import com.gzcc.service.CommentService;
 import com.gzcc.service.StudentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.List;
@@ -71,6 +73,17 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public String saveComment(String uid,String studentId, String starScore, String commentContent) {
+
+        //查看是否评论过：
+        Comment commented = new Comment();
+        commented.setActivityId(uid);
+        commented.setStudentId(studentId);
+        Example<Comment> example = Example.of(commented);
+        final Optional<Comment> one = commentRepository.findOne(example);
+        //不能重复提交评论：
+        if(one.get() != null){
+            return Const.FAILED;
+        }
 
         Student student = studentService.getMyInformationById(studentId);
         //TODO:评论创建时间和修改时间？

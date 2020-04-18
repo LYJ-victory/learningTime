@@ -30,12 +30,6 @@ public class Activity {
     //学时：
     private Double score;
 
-////    工作人员学时：
-//    private Double scoreStaff;
-////    参与者学时：
-//    private Double scorePlayer;
-////    观众学时：
-//    private Double scoreViewer;
 
 //    活动是否结束：
     private Short stop;
