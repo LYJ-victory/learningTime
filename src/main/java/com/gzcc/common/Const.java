@@ -61,8 +61,8 @@ public class Const {
      */
     //密钥：
     public static String myJwtSecret = "gzccNice";
-    //过期时长：30天：currentTimeMillis
-    public static long expertTime = 30 * 24 * 60 * 60 * 1000;
+    //过期时长：7天：currentTimeMillis
+    public static long expertTime = 7 * 24 * 60 * 60 * 1000;
     /**
      * 一般结果通知
      */

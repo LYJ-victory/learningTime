@@ -62,6 +62,7 @@ public class StudentActivitiesServiceImpl implements StudentActivitiesService {
                         //活动需要人数限制：
                         if(nums != null){
                             activity.get().setNums(activity.get().getNums()-1);
+
                             activityRepository.save(activity.get());
                         }
                         StudentActivities studentActivities = new StudentActivities();

@@ -118,10 +118,10 @@ public class SponsorController {
 
         final TempActivity myActivityUid = objectMapper.readValue(uid, TempActivity.class);
         //判断缓存中是否有：
-        String activity_join_type = redisService.get(Const.REDIS_ACTIVITY_PRE+myActivityUid.getUid());
-        if(org.apache.commons.lang3.StringUtils.isEmpty(activity_join_type)){
-            return ResponseEntity.badRequest().body("活动已失效");
-        }
+//        String activity_join_type = redisService.get(Const.REDIS_ACTIVITY_PRE+myActivityUid.getUid());
+//        if(org.apache.commons.lang3.StringUtils.isEmpty(activity_join_type)){
+//            return ResponseEntity.badRequest().body("活动已失效");
+//        }
         String result = studentActivitiesService.InsertStudentId(myActivityUid.getUid(),studentId);
         if(Const.SUCCESS.equals(result)){
             return new ResponseEntity<String>(result,HttpStatus.OK);
