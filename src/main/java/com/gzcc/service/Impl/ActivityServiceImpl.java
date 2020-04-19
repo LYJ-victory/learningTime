@@ -10,6 +10,7 @@ import com.gzcc.repository.ActivityRepository;
 import com.gzcc.repository.StudentActivitiesRepository;
 import com.gzcc.service.ActivityService;
 import com.gzcc.service.RedisService;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,17 +49,23 @@ public class ActivityServiceImpl implements ActivityService{
      */
     @Override
     public ActivityListVO getAllActivity(int nowPage,int pageSize,int condition ,String activityType) {
+        ActivityListVO activityListVO = new ActivityListVO();
         //TODO:选出所有有效的活动：
         Activity activity = new Activity();
-        //要匹配的字段：
-        activity.setStop(new Short("0"));
+        //要匹配的字段：false:0 未结束,true:1 已结束
+        activity.setStop(false);
+        //这里必须要设置为null,要不然该值会是一个默认值0，这样条件就会变成找stop=0和join_type=0的了
+        activity.setJoin_type(null);
         Example<Activity> example1 = Example.of(activity);
+
         try{
             //1.表示按时间进行排序新活动
             if (condition == 1){
-                Sort sort = new Sort(Sort.Direction.ASC, "created");
-                PageRequest pageable = new PageRequest(nowPage,pageSize,sort);
-                return makeactivityListVO(pageable,example1);
+                PageRequest pageable = PageRequest.of(nowPage,pageSize,Sort.Direction.ASC,"created");
+                Page<Activity> page = activityRepository.findAll(example1,pageable);
+                activityListVO = pageAbout(activityListVO,page);
+                activityListVO.setResults(page.getContent());
+                return activityListVO;
             //2.表示按照类型查询活动
             }else if(condition == 2 && activityType != null){
                 List<String> creditTypeList = Arrays.asList("wt_credit","xl_credit","cxcy_credit","fl_credit","sxdd_credit");
@@ -66,17 +73,21 @@ public class ActivityServiceImpl implements ActivityService{
                 //TODO:要匹配的字段：
                 activity.setCredit_type(collect.get(0));
                 ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                        .withMatcher("credit_type",ExampleMatcher.GenericPropertyMatchers.exact())
-                        .withMatcher("stop",ExampleMatcher.GenericPropertyMatchers.exact());
+                        .withMatcher("credit_type",ExampleMatcher.GenericPropertyMatchers.exact());
                 Example<Activity> example = Example.of(activity,exampleMatcher);
-                PageRequest pageable = new PageRequest(nowPage,pageSize);
+                PageRequest pageable = PageRequest.of(nowPage,pageSize);
                 //得到某一类型的活动列表:
-                return makeactivityListVO(pageable,example);
+                Page<Activity> page1 = activityRepository.findAll(example,pageable);
+                pageAbout(activityListVO,page1);
+                activityListVO.setResults(page1.getContent());
+                return activityListVO;
             }
-            //默认无条件展示所有新发布的活动：
-            PageRequest pageable = new PageRequest(nowPage,pageSize);
-
-            return makeactivityListVO(pageable,example1);
+            //默认降序展示所有新发布的活动：
+            PageRequest pageable = PageRequest.of(nowPage,pageSize);
+            Page<Activity> page = activityRepository.findAll(example1,pageable);
+            activityListVO = pageAbout(activityListVO,page);
+            activityListVO.setResults(page.getContent());
+            return activityListVO;
         }catch (Exception e){
             return new ActivityListVO();
         }
@@ -114,16 +125,35 @@ public class ActivityServiceImpl implements ActivityService{
 
     private ActivityListVO makeactivityListVO(Pageable pageable,Example<Activity> example){
 
-
-        Page<Activity> page = activityRepository.findAll(pageable);
-
         ActivityListVO activityListVO = new ActivityListVO();
+
+        //按学时类型筛选：
+        if(example != null){
+            Page<Activity> page1 = activityRepository.findAll(example,pageable);
+            pageAbout(activityListVO,page1);
+            activityListVO.setResults(page1.getContent());
+            return activityListVO;
+        }
+        //默认和按时间筛选：
+        Page<Activity> page = activityRepository.findAll(pageable);
+        activityListVO = pageAbout(activityListVO,page);
+        activityListVO.setResults(page.getContent());
+        return activityListVO;
+
+    }
+
+    /**
+     *
+     * @param page
+     * @return
+     */
+    public ActivityListVO pageAbout(ActivityListVO activityListVO,Page<Activity> page){
         //总记录数
         activityListVO.setCount((int) page.getTotalElements());
         //当前页
         activityListVO.setCurrent(page.getNumber());
         //末页：
-        PageRequest tempPageable = new PageRequest(page.getTotalPages(),Const.pageSize);
+        PageRequest tempPageable = PageRequest.of(page.getTotalPages(),Const.pageSize);
         Page<Activity> tempPage = activityRepository.findAll(tempPageable);
 
         int nextPage = page.getNumber() <= page.getTotalPages()?page.getNumber()+1:tempPage.getTotalPages();
@@ -132,17 +162,7 @@ public class ActivityServiceImpl implements ActivityService{
         activityListVO.setNext(Const.pageNext+nextPage);
         //上一页
         activityListVO.setPrevious(Const.pagePre+prePage);
-
-        //按学时类型筛选：
-        if(example != null){
-            activityListVO.setResults(activityRepository.findAll(example,pageable).getContent());
-            return activityListVO;
-        }
-        activityListVO.setResults(activityRepository.findAll(pageable).getContent());
-
         return activityListVO;
-
-
     }
 
     /**
@@ -169,7 +189,6 @@ public class ActivityServiceImpl implements ActivityService{
                     }
                 }
             }
-//            System.out.println(page);
             ActivityListVO activityListVO = new ActivityListVO();
 
             activityListVO.setResults(activities2);

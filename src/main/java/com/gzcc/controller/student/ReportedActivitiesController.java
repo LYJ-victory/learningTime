@@ -120,7 +120,7 @@ public class ReportedActivitiesController {
         if(Const.SUCCESS.equals(result)){
             return new ResponseEntity<String>(result,HttpStatus.OK);
         }
-        return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<String>("不能重复评论该活动",HttpStatus.OK);
 
     }
 

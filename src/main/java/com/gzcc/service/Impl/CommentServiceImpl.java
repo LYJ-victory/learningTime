@@ -79,9 +79,9 @@ public class CommentServiceImpl implements CommentService {
         commented.setActivityId(uid);
         commented.setStudentId(studentId);
         Example<Comment> example = Example.of(commented);
-        final Optional<Comment> one = commentRepository.findOne(example);
+        List<Comment> all = commentRepository.findAll(example);
         //返回。不能重复提交评论：
-        if(one.get() != null){
+        if(all.size()>0){
             return Const.FAILED;
         }
 

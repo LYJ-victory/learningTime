@@ -26,13 +26,13 @@ public class Activity {
     private LocalDateTime deadline;
 
     //1:参赛者、2：观众、3：工作人员：
-    private int join_type;
+    private Integer join_type;
     //学时：
     private Double score;
 
 
-//    活动是否结束：
-    private Short stop;
+//    活动是否结束：false:0 未结束,true:1 已结束
+    private boolean stop;
 //    报名人数：该活动允许参加的最大人数
     private Integer nums;
 //    活动地点：
